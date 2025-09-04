@@ -1,0 +1,386 @@
+/**
+ * 全局样式文件
+ */
+
+// 重置样式
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+  
+  &:hover {
+    background: #a8a8a8;
+  }
+}
+
+// 通用类
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.mb-24 {
+  margin-bottom: 24px;
+}
+
+.mr-8 {
+  margin-right: 8px;
+}
+
+.mr-16 {
+  margin-right: 16px;
+}
+
+.ml-8 {
+  margin-left: 8px;
+}
+
+.ml-16 {
+  margin-left: 16px;
+}
+
+// 页面容器
+.page-container {
+  padding: 24px;
+  background: #fff;
+  margin: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  
+  .page-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #262626;
+  }
+}
+
+// 搜索表单
+.search-form {
+  background: #fafafa;
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .search-actions {
+    text-align: right;
+    margin-top: 16px;
+  }
+}
+
+// 表格样式
+.table-container {
+  .ant-table {
+    .ant-table-thead > tr > th {
+      background-color: #fafafa;
+      font-weight: 600;
+    }
+    
+    .ant-table-tbody > tr > td {
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .ant-table-tbody > tr:hover > td {
+      background-color: #f5f5f5;
+    }
+  }
+  
+  .table-actions {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+// 状态标签
+.status-tag {
+  &.status-normal {
+    color: #52c41a;
+    background-color: #f6ffed;
+    border-color: #b7eb8f;
+  }
+  
+  &.status-disabled {
+    color: #ff4d4f;
+    background-color: #fff2f0;
+    border-color: #ffccc7;
+  }
+  
+  &.status-pending {
+    color: #fa8c16;
+    background-color: #fff7e6;
+    border-color: #ffd591;
+  }
+  
+  &.status-confirmed {
+    color: #1890ff;
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+  }
+  
+  &.status-completed {
+    color: #52c41a;
+    background-color: #f6ffed;
+    border-color: #b7eb8f;
+  }
+  
+  &.status-cancelled {
+    color: #ff4d4f;
+    background-color: #fff2f0;
+    border-color: #ffccc7;
+  }
+  
+  &.status-timeout {
+    color: #8c8c8c;
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+  }
+}
+
+// 登录页面样式
+.login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-form {
+  width: 400px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  
+  .login-title {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 28px;
+    font-weight: 600;
+    color: #262626;
+  }
+  
+  .login-subtitle {
+    text-align: center;
+    margin-bottom: 32px;
+    color: #8c8c8c;
+    font-size: 14px;
+  }
+  
+  .ant-form-item {
+    margin-bottom: 20px;
+  }
+  
+  .login-button {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 6px;
+  }
+  
+  .remember-checkbox {
+    margin-bottom: 24px;
+  }
+}
+
+// 布局样式
+.main-layout {
+  min-height: 100vh;
+  
+  .ant-layout-sider {
+    box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+    
+    .logo {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      background-color: #002140;
+    }
+  }
+  
+  .ant-layout-header {
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      
+      .user-info {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+        
+        &:hover {
+          background-color: #f5f5f5;
+        }
+        
+        .username {
+          margin-left: 8px;
+          color: #262626;
+        }
+      }
+    }
+  }
+  
+  .ant-layout-content {
+    margin: 0;
+    min-height: calc(100vh - 64px);
+  }
+}
+
+// 卡片样式
+.info-card {
+  .ant-card-head {
+    border-bottom: 1px solid #f0f0f0;
+    
+    .ant-card-head-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+  
+  .ant-card-body {
+    padding: 24px;
+  }
+}
+
+// 统计卡片
+.stat-card {
+  text-align: center;
+  
+  .stat-number {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    
+    &.primary {
+      color: #1890ff;
+    }
+    
+    &.success {
+      color: #52c41a;
+    }
+    
+    &.warning {
+      color: #fa8c16;
+    }
+    
+    &.danger {
+      color: #ff4d4f;
+    }
+  }
+  
+  .stat-label {
+    color: #8c8c8c;
+    font-size: 14px;
+  }
+}
+
+// 响应式
+@media (max-width: 768px) {
+  .page-container {
+    margin: 8px;
+    padding: 16px;
+  }
+  
+  .search-form {
+    padding: 16px;
+  }
+  
+  .login-form {
+    width: 90%;
+    margin: 0 20px;
+    padding: 32px 24px;
+  }
+}
