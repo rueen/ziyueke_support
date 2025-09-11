@@ -103,11 +103,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { UserOutlined, BookOutlined } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
-import { useCourseStore } from '@/stores/course'
+import * as courseApi from '@/api/course'
 import { formatDateTime } from '@/utils/format'
 
 const authStore = useAuthStore()
-const courseStore = useCourseStore()
 
 // 响应式数据
 const stats = ref(null)
@@ -120,8 +119,12 @@ const userInfo = computed(() => authStore.userInfo)
  */
 const getStats = async () => {
   try {
-    const data = await courseStore.getCourseStats()
-    stats.value = data
+    const response = await courseApi.getCourseStats()
+    if (response.code === 200) {
+      stats.value = response.data
+    } else {
+      console.error('获取统计数据失败:', response.message)
+    }
   } catch (error) {
     console.error('获取统计数据失败:', error)
   }

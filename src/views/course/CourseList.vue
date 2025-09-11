@@ -177,8 +177,9 @@
  */
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import { SearchOutlined, ReloadOutlined, UserOutlined } from '@ant-design/icons-vue'
-import { useCourseStore } from '@/stores/course'
+import * as courseApi from '@/api/course'
 import { formatPhone } from '@/utils/format'
 import {
   COURSE_STATUS_OPTIONS,
@@ -188,9 +189,12 @@ import {
 } from '@/utils/constants'
 
 const router = useRouter()
-const courseStore = useCourseStore()
 
 // 响应式数据
+const courseList = ref([])
+const loading = ref(false)
+const total = ref(0)
+
 const searchForm = reactive({
   keyword: '',
   status: null,
@@ -202,11 +206,6 @@ const pagination = reactive({
   pageSize: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE,
   total: 0
 })
-
-// 计算属性
-const courseList = computed(() => courseStore.courseList)
-const loading = computed(() => courseStore.loading)
-const total = computed(() => courseStore.total)
 
 // 分页配置
 const paginationConfig = computed(() => ({
@@ -264,17 +263,31 @@ const columns = [
  * 获取课程列表
  */
 const getCourseList = async () => {
-  const params = {
-    page: pagination.current,
-    limit: pagination.pageSize,
-    keyword: searchForm.keyword || undefined,
-    status: searchForm.status,
-    start_date: searchForm.dateRange?.[0]?.format('YYYY-MM-DD'),
-    end_date: searchForm.dateRange?.[1]?.format('YYYY-MM-DD')
+  loading.value = true
+  try {
+    const params = {
+      page: pagination.current,
+      limit: pagination.pageSize,
+      keyword: searchForm.keyword || undefined,
+      status: searchForm.status,
+      start_date: searchForm.dateRange?.[0]?.format('YYYY-MM-DD'),
+      end_date: searchForm.dateRange?.[1]?.format('YYYY-MM-DD')
+    }
+    
+    const response = await courseApi.getCourseList(params)
+    if (response.code === 200) {
+      courseList.value = response.data.list
+      total.value = response.data.total
+      pagination.total = response.data.total
+    } else {
+      message.error(response.message || '获取课程列表失败')
+    }
+  } catch (error) {
+    console.error('获取课程列表失败:', error)
+    message.error('获取课程列表失败')
+  } finally {
+    loading.value = false
   }
-  
-  await courseStore.getCourseList(params)
-  pagination.total = total.value
 }
 
 /**
@@ -321,9 +334,17 @@ const handleViewDetail = (record) => {
  * @param {Object} record - 课程记录
  */
 const handleDelete = async (record) => {
-  const success = await courseStore.deleteCourse(record.id)
-  if (success) {
-    getCourseList()
+  try {
+    const response = await courseApi.deleteCourse(record.id)
+    if (response.code === 200) {
+      message.success('删除课程成功')
+      getCourseList()
+    } else {
+      message.error(response.message || '删除课程失败')
+    }
+  } catch (error) {
+    console.error('删除课程失败:', error)
+    message.error('删除课程失败')
   }
 }
 

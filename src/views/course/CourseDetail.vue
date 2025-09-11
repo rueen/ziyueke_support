@@ -2,11 +2,11 @@
   <div class="page-container">
     <div class="page-header">
       <div class="flex-between">
-        <h1 class="page-title">课程详情</h1>
         <a-button @click="$router.go(-1)">
           <arrow-left-outlined />
           返回
         </a-button>
+        <h1 class="page-title">课程详情</h1>
       </div>
     </div>
     
@@ -223,13 +223,12 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { ArrowLeftOutlined, UserOutlined } from '@ant-design/icons-vue'
-import { useCourseStore } from '@/stores/course'
+import * as courseApi from '@/api/course'
 import { formatDateTime } from '@/utils/format'
 import { COURSE_STATUS_TEXT, COURSE_STATUS_COLORS } from '@/utils/constants'
 
 const route = useRoute()
 const router = useRouter()
-const courseStore = useCourseStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -248,10 +247,15 @@ const getCourseDetail = async () => {
   
   loading.value = true
   try {
-    const data = await courseStore.getCourseDetail(courseId)
-    courseDetail.value = data
+    const response = await courseApi.getCourseDetail(courseId)
+    if (response.code === 200) {
+      courseDetail.value = response.data
+    } else {
+      message.error(response.message || '获取课程详情失败')
+    }
   } catch (error) {
     console.error('获取课程详情失败:', error)
+    message.error('获取课程详情失败')
   } finally {
     loading.value = false
   }
@@ -261,9 +265,17 @@ const getCourseDetail = async () => {
  * 删除课程
  */
 const handleDelete = async () => {
-  const success = await courseStore.deleteCourse(courseDetail.value.id)
-  if (success) {
-    router.go(-1)
+  try {
+    const response = await courseApi.deleteCourse(courseDetail.value.id)
+    if (response.code === 200) {
+      message.success('删除课程成功')
+      router.go(-1)
+    } else {
+      message.error(response.message || '删除课程失败')
+    }
+  } catch (error) {
+    console.error('删除课程失败:', error)
+    message.error('删除课程失败')
   }
 }
 

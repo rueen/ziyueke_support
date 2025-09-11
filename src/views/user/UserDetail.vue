@@ -161,13 +161,12 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { ArrowLeftOutlined, UserOutlined } from '@ant-design/icons-vue'
-import { useUserStore } from '@/stores/user'
+import * as userApi from '@/api/user'
 import { formatDateTime } from '@/utils/format'
 import { USER_STATUS_TEXT } from '@/utils/constants'
 
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -186,10 +185,15 @@ const getUserDetail = async () => {
   
   loading.value = true
   try {
-    const data = await userStore.getUserDetail(userId)
-    userDetail.value = data
+    const response = await userApi.getUserDetail(userId)
+    if (response.code === 200) {
+      userDetail.value = response.data
+    } else {
+      message.error(response.message || '获取用户详情失败')
+    }
   } catch (error) {
     console.error('获取用户详情失败:', error)
+    message.error('获取用户详情失败')
   } finally {
     loading.value = false
   }
@@ -209,9 +213,17 @@ const handleToggleStatus = () => {
     okText: '确定',
     cancelText: '取消',
     onOk: async () => {
-      const success = await userStore.updateUserStatus(user.id, newStatus)
-      if (success) {
-        userDetail.value.status = newStatus
+      try {
+        const response = await userApi.updateUserStatus(user.id, newStatus)
+        if (response.code === 200) {
+          message.success(`${actionText}用户成功`)
+          userDetail.value.status = newStatus
+        } else {
+          message.error(response.message || `${actionText}用户失败`)
+        }
+      } catch (error) {
+        console.error(`${actionText}用户失败:`, error)
+        message.error(`${actionText}用户失败`)
       }
     }
   })
@@ -221,9 +233,17 @@ const handleToggleStatus = () => {
  * 删除用户
  */
 const handleDelete = async () => {
-  const success = await userStore.deleteUser(userDetail.value.id)
-  if (success) {
-    router.go(-1)
+  try {
+    const response = await userApi.deleteUser(userDetail.value.id)
+    if (response.code === 200) {
+      message.success('删除用户成功')
+      router.go(-1)
+    } else {
+      message.error(response.message || '删除用户失败')
+    }
+  } catch (error) {
+    console.error('删除用户失败:', error)
+    message.error('删除用户失败')
   }
 }
 

@@ -151,15 +151,19 @@
  */
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import { SearchOutlined, ReloadOutlined, UserOutlined } from '@ant-design/icons-vue'
-import { useUserStore } from '@/stores/user'
+import * as userApi from '@/api/user'
 import { formatDateTime, formatPhone } from '@/utils/format'
 import { USER_STATUS_OPTIONS, USER_STATUS_TEXT, PAGINATION_CONFIG } from '@/utils/constants'
 
 const router = useRouter()
-const userStore = useUserStore()
 
 // 响应式数据
+const userList = ref([])
+const loading = ref(false)
+const total = ref(0)
+
 const searchForm = reactive({
   keyword: '',
   status: null,
@@ -171,11 +175,6 @@ const pagination = reactive({
   limit: PAGINATION_CONFIG.DEFAULT_PAGE_SIZE,
   total: 0
 })
-
-// 计算属性
-const userList = computed(() => userStore.userList)
-const loading = computed(() => userStore.loading)
-const total = computed(() => userStore.total)
 
 // 分页配置
 const paginationConfig = computed(() => ({
@@ -230,17 +229,31 @@ const columns = [
  * 获取用户列表
  */
 const getUserList = async () => {
-  const params = {
-    page: pagination.current,
-    limit: pagination.limit,
-    keyword: searchForm.keyword || undefined,
-    status: searchForm.status,
-    start_date: searchForm.dateRange?.[0]?.format('YYYY-MM-DD'),
-    end_date: searchForm.dateRange?.[1]?.format('YYYY-MM-DD')
+  loading.value = true
+  try {
+    const params = {
+      page: pagination.current,
+      limit: pagination.limit,
+      keyword: searchForm.keyword || undefined,
+      status: searchForm.status,
+      start_date: searchForm.dateRange?.[0]?.format('YYYY-MM-DD'),
+      end_date: searchForm.dateRange?.[1]?.format('YYYY-MM-DD')
+    }
+    
+    const response = await userApi.getUserList(params)
+    if (response.code === 200) {
+      userList.value = response.data.list
+      total.value = response.data.total
+      pagination.total = response.data.total
+    } else {
+      message.error(response.message || '获取用户列表失败')
+    }
+  } catch (error) {
+    console.error('获取用户列表失败:', error)
+    message.error('获取用户列表失败')
+  } finally {
+    loading.value = false
   }
-  
-  await userStore.getUserList(params)
-  pagination.total = total.value
 }
 
 /**
@@ -288,9 +301,18 @@ const handleViewDetail = (record) => {
  */
 const handleToggleStatus = async (record) => {
   const newStatus = record.status === 1 ? 0 : 1
-  const success = await userStore.updateUserStatus(record.id, newStatus)
-  if (success) {
-    getUserList()
+  try {
+    const response = await userApi.updateUserStatus(record.id, newStatus)
+    if (response.code === 200) {
+      const statusText = newStatus === 1 ? '启用' : '禁用'
+      message.success(`${statusText}用户成功`)
+      getUserList()
+    } else {
+      message.error(response.message || '修改用户状态失败')
+    }
+  } catch (error) {
+    console.error('修改用户状态失败:', error)
+    message.error('修改用户状态失败')
   }
 }
 
@@ -299,9 +321,17 @@ const handleToggleStatus = async (record) => {
  * @param {Object} record - 用户记录
  */
 const handleDelete = async (record) => {
-  const success = await userStore.deleteUser(record.id)
-  if (success) {
-    getUserList()
+  try {
+    const response = await userApi.deleteUser(record.id)
+    if (response.code === 200) {
+      message.success('删除用户成功')
+      getUserList()
+    } else {
+      message.error(response.message || '删除用户失败')
+    }
+  } catch (error) {
+    console.error('删除用户失败:', error)
+    message.error('删除用户失败')
   }
 }
 
