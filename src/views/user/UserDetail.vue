@@ -2,11 +2,11 @@
   <div class="page-container">
     <div class="page-header">
       <div class="flex-between">
-        <h1 class="page-title">用户详情</h1>
         <a-button @click="$router.go(-1)">
           <arrow-left-outlined />
           返回
         </a-button>
+        <h1 class="page-title">用户详情</h1>
       </div>
     </div>
     
