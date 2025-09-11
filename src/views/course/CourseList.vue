@@ -154,6 +154,7 @@
                 ok-text="确定"
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
+                v-if="[4,5].includes(record.booking_status)"
               >
                 <a-button
                   type="link"
@@ -255,7 +256,6 @@ const columns = [
     title: '操作',
     key: 'action',
     width: 120,
-    align: 'center'
   }
 ]
 
