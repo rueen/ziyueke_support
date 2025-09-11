@@ -78,7 +78,7 @@
               </div>
             </div>
             
-            <div class="course-actions" style="margin-top: 24px;">
+            <div class="course-actions" style="margin-top: 24px;" v-if="[4,5].includes(courseDetail.booking_status)">
               <a-popconfirm
                 title="确定要删除这个课程吗？删除后不可恢复。"
                 ok-text="确定"
