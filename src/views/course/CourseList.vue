@@ -11,13 +11,44 @@
         layout="inline"
         @finish="handleSearch"
       >
-        <a-form-item label="搜索关键词">
-          <a-input
-            v-model:value="searchForm.keyword"
-            placeholder="请输入学员昵称或手机号"
-            style="width: 200px"
+      <a-form-item label="学员">
+          <a-select
+            v-model:value="searchForm.student_id"
+            placeholder="请选择学员"
+            style="width: 120px;"
             allow-clear
-          />
+            show-search
+            :filter-option="false"
+            @search="loadUserOptions"
+          >
+            <a-select-option
+              v-for="option in userList"
+              :key="option.id"
+              :value="option.id"
+            >
+              {{ option.nickname }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item label="教练">
+          <a-select
+            v-model:value="searchForm.coach_id"
+            placeholder="请选择教练"
+            style="width: 120px;"
+            allow-clear
+            show-search
+            :filter-option="false"
+            @search="loadUserOptions"
+          >
+            <a-select-option
+              v-for="option in userList"
+              :key="option.id"
+              :value="option.id"
+            >
+              {{ option.nickname }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
         
         <a-form-item label="课程状态">
@@ -188,6 +219,7 @@ import {
   COURSE_STATUS_COLORS,
   PAGINATION_CONFIG
 } from '@/utils/constants'
+import * as userApi from '@/api/user'
 
 const router = useRouter()
 
@@ -196,8 +228,25 @@ const courseList = ref([])
 const loading = ref(false)
 const total = ref(0)
 
+const userList = ref([])
+
+const loadUserOptions = async (keyword = '') => {
+  const response = await userApi.getUserList({
+    page: 1,
+    limit: 20,
+    status: 1,
+    keyword
+  })
+  if (response.code === 200) {
+    userList.value = response.data.list
+  } else {
+    message.error(response.message || '获取用户列表失败')
+  }
+}
+
 const searchForm = reactive({
-  keyword: '',
+  student_id: null,
+  coach_id: null,
   status: null,
   dateRange: null
 })
@@ -268,7 +317,8 @@ const getCourseList = async () => {
     const params = {
       page: pagination.current,
       limit: pagination.pageSize,
-      keyword: searchForm.keyword || undefined,
+      student_id: searchForm.student_id,
+      coach_id: searchForm.coach_id,
       status: searchForm.status,
       start_date: searchForm.dateRange?.[0]?.format('YYYY-MM-DD'),
       end_date: searchForm.dateRange?.[1]?.format('YYYY-MM-DD')
@@ -302,7 +352,8 @@ const handleSearch = () => {
  * 处理重置
  */
 const handleReset = () => {
-  searchForm.keyword = ''
+  searchForm.student_id = null
+  searchForm.coach_id = null
   searchForm.status = null
   searchForm.dateRange = null
   pagination.current = 1
@@ -351,6 +402,7 @@ const handleDelete = async (record) => {
 // 组件挂载时获取数据
 onMounted(() => {
   getCourseList()
+  loadUserOptions()
 })
 </script>
 
